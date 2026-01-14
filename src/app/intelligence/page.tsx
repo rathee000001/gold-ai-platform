@@ -88,6 +88,12 @@ export default async function Home() {
                       <span className="text-2xl font-black text-slate-900 tracking-tight">AI News Scan</span>
                    </div>
                 </div>
+                                <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-8 border border-amber-100/50 shadow-xl">
+                   <div className="flex flex-col items-center">
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-2">Months</span>
+                      <span className="text-2xl font-black text-slate-900 tracking-tight">240</span>
+                   </div>
+                </div>
                 <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-8 border border-emerald-100/50 shadow-xl">
                    <div className="flex flex-col items-center">
                       <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-2">Data Refresh</span>

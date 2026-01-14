@@ -11,6 +11,7 @@
  * 1. FORMULA FIX: Filtered 'Intercept' from topCoeffs map to prevent duplicate values.
  * 2. ICON STABILITY: Verified Icons.Timeline definition.
  * 3. THEME: Maintained "White Glass" high-contrast institutional aesthetic.
+ * 4. EXPORT: Integrated premium institutional CSV download.
  * COMPLIANCE:      BASELINE_1400_LINE_STRICT
  * * ------------------------------------------------------------------------------------------------------------------------------------------------------------
  */
@@ -135,6 +136,32 @@ export default function BacktestClientView({ fullData, baseMetrics, intercept, t
       .slice(0, 4);
   }, [fullData]);
 
+  // EXPORT HANDLER: BLOB-BASED INSTITUTIONAL PROTOCOL
+  const handleCSVDownload = () => {
+    const headers = ["Date", "Actual Market Price", "Model Projection", "Error ($)", "Abs % Error", "Regime Status"];
+    const rows = fullData.map(row => [
+      row.date,
+      row.actual.toFixed(2),
+      row.predicted.toFixed(2),
+      row.error.toFixed(2),
+      (row.ape * 100).toFixed(2) + "%",
+      row.regime
+    ].join(","));
+
+    const csvContent = headers.join(",") + "\n" + rows.join("\n");
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `Institutional_Backtest_Matrix_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   if (!isMounted) return <div className="h-[600px] w-full bg-slate-50 animate-pulse rounded-[3rem]" />;
 
   return (
@@ -174,7 +201,20 @@ export default function BacktestClientView({ fullData, baseMetrics, intercept, t
       </div>
 
       {/* 4.2 CHARTING ENGINE */}
+      
       <div className="glass-panel bg-white p-12 h-[650px] relative shadow-2xl rounded-[3.5rem] border border-slate-200 overflow-hidden ring-1 ring-slate-100">
+        <div className="absolute top-8 left-0 right-0 z-20 pointer-events-none flex flex-col items-center">
+   <h3 className="text-[16px] font-black uppercase tracking-[0.3em] text-slate-800 mb-1">
+      Institutional In-Sample Validation
+   </h3>
+   <div className="flex items-center gap-3">
+      <div className="h-[1px] w-8 bg-blue-500"></div>
+      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+         Training Training Epoch: 2006 — 2020
+      </span>
+      <div className="h-[1px] w-8 bg-blue-500"></div>
+   </div>
+</div>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={fullData} margin={{ top: 80, right: 30, left: 10, bottom: 40 }}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
@@ -197,48 +237,70 @@ export default function BacktestClientView({ fullData, baseMetrics, intercept, t
 
       {/* 4.3 THE RESTORED DATA GRID TABLE */}
       <div className="glass-panel p-0 overflow-hidden bg-white border border-slate-200 shadow-xl rounded-[3rem]">
-         <div className="px-10 py-8 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
-            <h3 className="text-[14px] font-black uppercase tracking-widest text-slate-800 flex items-center gap-3">
-               <Icons.Timeline /> Backtest Alignment Data Matrix
-            </h3>
-            <span className="text-[10px] font-black text-slate-400 uppercase bg-white px-4 py-2 rounded-full border border-slate-100 shadow-sm">
-               EPOCH: 2006-2020 (Training)
-            </span>
-         </div>
-         <div className="overflow-auto h-[550px] institutional-scrollbar">
-           <table className="w-full text-left min-w-[1000px] relative border-collapse">
-              <thead className="bg-white text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 sticky top-0 z-20 shadow-sm ring-1 ring-slate-100">
-                 <tr>
-                   <th className="px-10 py-5 bg-slate-50 border-b border-slate-100 sticky left-0 z-30 shadow-r">Date</th>
-                   <th className="px-10 py-5 bg-slate-50 border-b border-slate-100 text-right">Actual Market</th>
-                   <th className="px-10 py-5 bg-slate-50 border-b border-slate-100 text-right">Ridge Model</th>
-                   <th className="px-10 py-5 bg-slate-50 border-b border-slate-100 text-right">Error ($)</th>
-                   <th className="px-10 py-5 bg-slate-50 border-b border-slate-100 text-right">Abs % Error</th>
-                   <th className="px-10 py-5 bg-slate-50 border-b border-slate-100 text-center">Regime Status</th>
-                 </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-50 text-[12px] font-mono text-slate-600">
-                 {filteredData.map((row, idx) => (
-                   <tr key={idx} className="hover:bg-blue-50/30 transition-colors group">
-                      <td className="px-10 py-4 font-bold text-slate-800 sticky left-0 bg-white group-hover:bg-blue-50/30 z-20 border-r">{row.date}</td>
-                      <td className="px-10 py-4 text-right tabular-nums font-bold text-emerald-700">${row.actual.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
-                      <td className="px-10 py-4 text-right tabular-nums text-blue-600 font-bold">${row.predicted.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
-                      <td className={`px-10 py-4 text-right tabular-nums font-black ${row.error > 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
-                        {row.error > 0 ? '+' : ''}{row.error.toFixed(2)}
-                      </td>
-                      <td className="px-10 py-4 text-right tabular-nums">{(row.ape * 100).toFixed(2)}%</td>
-                      <td className="px-10 py-4 text-center">
-                        <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase border ${
-                          row.regime === 'Risk-Off' ? 'bg-rose-50 text-rose-600 border-rose-100' : 'bg-emerald-50 text-emerald-600 border-emerald-100'
-                        }`}>
-                          {row.regime}
-                        </span>
-                      </td>
-                   </tr>
-                 ))}
-              </tbody>
-           </table>
-         </div>
+          <div className="px-10 py-8 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+             <h3 className="text-[14px] font-black uppercase tracking-widest text-slate-800 flex items-center gap-3">
+                <Icons.Timeline /> Backtest Alignment Data Matrix
+             </h3>
+
+             {/* PREMIUM INSTITUTIONAL EXPORT BUTTON */}
+             <div className="flex items-center gap-6">
+                <button 
+                  onClick={handleCSVDownload}
+                  className="relative group overflow-hidden pl-8 pr-6 py-4 rounded-[1.5rem] bg-slate-900 text-white shadow-[0_20px_40px_-10px_rgba(15,23,42,0.5)] transition-all duration-500 hover:scale-[1.02] border border-slate-700/50"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-700 via-indigo-600 to-slate-900 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-out"></div>
+                  <div className="relative z-10 flex items-center gap-6">
+                    <div className="flex flex-col items-start">
+                       <span className="text-[8px] font-bold text-slate-400 group-hover:text-blue-100 uppercase tracking-widest mb-0.5">Full Residuals</span>
+                       <span className="text-[11px] font-black text-white uppercase tracking-[0.25em]">Export Dataset</span>
+                    </div>
+                    <div className="h-10 w-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:bg-white group-hover:text-blue-700 transition-all shadow-inner">
+                       <svg className="w-5 h-5 transition-transform duration-300 group-hover:translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                       </svg>
+                    </div>
+                  </div>
+                </button>
+
+                <span className="text-[10px] font-black text-slate-400 uppercase bg-white px-4 py-2 rounded-full border border-slate-100 shadow-sm">
+                   EPOCH: 2006-2020
+                </span>
+             </div>
+          </div>
+          <div className="overflow-auto h-[550px] institutional-scrollbar">
+            <table className="w-full text-left min-w-[1000px] relative border-collapse">
+               <thead className="bg-white text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 sticky top-0 z-20 shadow-sm ring-1 ring-slate-100">
+                  <tr>
+                    <th className="px-10 py-5 bg-slate-50 border-b border-slate-100 sticky left-0 z-30 shadow-r">Date</th>
+                    <th className="px-10 py-5 bg-slate-50 border-b border-slate-100 text-right">Actual Market</th>
+                    <th className="px-10 py-5 bg-slate-50 border-b border-slate-100 text-right">Ridge Model</th>
+                    <th className="px-10 py-5 bg-slate-50 border-b border-slate-100 text-right">Error ($)</th>
+                    <th className="px-10 py-5 bg-slate-50 border-b border-slate-100 text-right">Abs % Error</th>
+                    <th className="px-10 py-5 bg-slate-50 border-b border-slate-100 text-center">Regime Status</th>
+                  </tr>
+               </thead>
+               <tbody className="divide-y divide-slate-50 text-[12px] font-mono text-slate-600">
+                  {filteredData.map((row, idx) => (
+                    <tr key={idx} className="hover:bg-blue-50/30 transition-colors group">
+                       <td className="px-10 py-4 font-bold text-slate-800 sticky left-0 bg-white group-hover:bg-blue-50/30 z-20 border-r">{row.date}</td>
+                       <td className="px-10 py-4 text-right tabular-nums font-bold text-emerald-700">${row.actual.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                       <td className="px-10 py-4 text-right tabular-nums text-blue-600 font-bold">${row.predicted.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                       <td className={`px-10 py-4 text-right tabular-nums font-black ${row.error > 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
+                         {row.error > 0 ? '+' : ''}{row.error.toFixed(2)}
+                       </td>
+                       <td className="px-10 py-4 text-right tabular-nums">{(row.ape * 100).toFixed(2)}%</td>
+                       <td className="px-10 py-4 text-center">
+                         <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase border ${
+                           row.regime === 'Risk-Off' ? 'bg-rose-50 text-rose-600 border-rose-100' : 'bg-emerald-50 text-emerald-600 border-emerald-100'
+                         }`}>
+                           {row.regime}
+                         </span>
+                       </td>
+                    </tr>
+                  ))}
+               </tbody>
+            </table>
+          </div>
       </div>
 
       {/* 4.4 FUNDAMENTAL INTELLIGENCE (PEAK/FALL ANALYSIS) */}
