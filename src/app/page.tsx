@@ -193,17 +193,17 @@ export default function HomePage() {
              <div className="grid grid-cols-2 gap-4 pt-8 border-t border-slate-100">
                 <div>
                    <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Course</span>
-                   <span className="font-bold text-slate-800">Supply Chain Mgmt</span>
+                   <span className="font-bold text-slate-800">Supply Chain Management</span>
                 </div>
                 <div>
-                   <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Instructor</span>
-                   <span className="font-bold text-slate-800">Rajendra Tibrewala</span>
+                   <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Professor</span>
+                   <span className="font-bold text-slate-800">Dr. Rajendra Tibrewala</span>
                 </div>
                 <div className="col-span-2 pt-4">
                    <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Developed By</span>
                    <div className="flex gap-3">
                       <span className="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-bold rounded-md">Praveen Rathee</span>
-                      <span className="px-3 py-1 bg-purple-50 text-purple-700 text-xs font-bold rounded-md">Kusuma Korada</span>
+                    
                    </div>
                 </div>
              </div>
