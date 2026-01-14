@@ -203,18 +203,7 @@ export default function BacktestClientView({ fullData, baseMetrics, intercept, t
       {/* 4.2 CHARTING ENGINE */}
       
       <div className="glass-panel bg-white p-12 h-[650px] relative shadow-2xl rounded-[3.5rem] border border-slate-200 overflow-hidden ring-1 ring-slate-100">
-        <div className="absolute top-8 left-0 right-0 z-20 pointer-events-none flex flex-col items-center">
-   <h3 className="text-[16px] font-black uppercase tracking-[0.3em] text-slate-800 mb-1">
-      Institutional In-Sample Validation
-   </h3>
-   <div className="flex items-center gap-3">
-      <div className="h-[1px] w-8 bg-blue-500"></div>
-      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
-         Training Training Epoch: 2006 — 2020
-      </span>
-      <div className="h-[1px] w-8 bg-blue-500"></div>
-   </div>
-</div>
+        
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={fullData} margin={{ top: 80, right: 30, left: 10, bottom: 40 }}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
